@@ -159,12 +159,7 @@ export function FormBuilder() {
           ))}
         </ol> */}
         {fields.length !== 0 ? (
-          <Button
-            onClick={() => setAddFieldDialogOpen(true)}
-            className="font-bold"
-          >
-            Add field
-          </Button>
+          <Button onClick={() => setAddFieldDialogOpen(true)}>Add field</Button>
         ) : (
           <Card className="p-4">
             <h3 className="text-lg font-bold tracking-tight">
@@ -173,10 +168,7 @@ export function FormBuilder() {
             <p className="text-zinc-500 text-sm pb-3">
               Add a new field to get started.
             </p>
-            <Button
-              onClick={() => setAddFieldDialogOpen(true)}
-              className="font-bold"
-            >
+            <Button onClick={() => setAddFieldDialogOpen(true)}>
               Add field
             </Button>
           </Card>
