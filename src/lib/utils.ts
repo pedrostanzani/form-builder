@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function capitalize(input: string): string {
@@ -11,3 +11,11 @@ export function capitalize(input: string): string {
   }
   return input.charAt(0).toUpperCase() + input.slice(1);
 }
+
+export function getUserFieldHTMLId(fieldId: number, field: string) {
+  return `user-field-${fieldId}--${field}`;
+}
+
+export function generateFieldKey(fieldId: number) {
+  return `field_${fieldId}`;
+};

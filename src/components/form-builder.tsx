@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { FieldItem } from "@/components/field-item";
+import { StringFieldItem } from "@/components/field-items/string";
 import { FormPreview } from "@/components/form-preview";
 import { FieldTypeIconWrapper } from "@/components/field-type-icon";
 import {
@@ -16,7 +16,13 @@ import {
 
 import { cn } from "@/lib/utils";
 
-import { FieldType, Field } from "@/types/fields";
+import {
+  FieldType,
+  Field,
+  StringField,
+  NumberField,
+  FieldWithoutId,
+} from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
 
 import {
@@ -38,7 +44,7 @@ export function FormBuilder() {
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
 
-  const appendField = (field: Omit<Field, "id">) => {
+  const appendField = (field: FieldWithoutId) => {
     setFields([...fields, { id: nextFieldId, ...field }]);
     setNextFieldId((prev) => prev + 1);
   };
@@ -51,6 +57,7 @@ export function FormBuilder() {
     if (fieldType === "string") {
       appendField({
         type: "string",
+        format: "input",
         label: "My string field",
         placeholder: "Insert placeholder here...",
         required: false,
@@ -82,6 +89,7 @@ export function FormBuilder() {
     <main className="flex flex-1 pt-4 px-4 gap-4">
       <div className="w-full">
         <h2 className="text-2xl font-bold tracking-tight mb-3">Form fields</h2>
+        <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre>
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -92,72 +100,50 @@ export function FormBuilder() {
             strategy={verticalListSortingStrategy}
           >
             <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
-              {fields.map((field) => (
-                <FieldItem
-                  key={field.id}
-                  id={field.id}
-                  field={field}
-                  setLabel={(newLabel) =>
-                    setFields((prev) =>
-                      prev.map((f) =>
-                        f.id === field.id ? { ...f, label: newLabel } : f
-                      )
-                    )
-                  }
-                  setPlaceholder={(newPlaceholder) =>
-                    setFields((prev) =>
-                      prev.map((f) =>
-                        f.id === field.id
-                          ? { ...f, placeholder: newPlaceholder }
-                          : f
-                      )
-                    )
-                  }
-                  setRequired={(newRequired) =>
-                    setFields((prev) =>
-                      prev.map((f) =>
-                        f.id === field.id ? { ...f, required: newRequired } : f
-                      )
-                    )
-                  }
-                  onRemove={() => removeField(field.id)}
-                />
-              ))}
+              {fields.map((field) => {
+                if (field.type === "string") {
+                  return (
+                    <StringFieldItem
+                      key={field.id}
+                      id={field.id}
+                      field={field}
+                      setLabel={(newLabel) =>
+                        setFields((prev) =>
+                          prev.map((f) =>
+                            f.id === field.id ? { ...f, label: newLabel } : f
+                          )
+                        )
+                      }
+                      setRequired={(newRequired) =>
+                        setFields((prev) =>
+                          prev.map((f) =>
+                            f.id === field.id
+                              ? { ...f, required: newRequired }
+                              : f
+                          )
+                        )
+                      }
+                      onSaveSettings={(values) => {
+                        setFields((prev) =>
+                          prev.map((f) =>
+                            f.id === field.id
+                              ? {
+                                  ...f,
+                                  placeholder: values.placeholder,
+                                  format: values.format,
+                                }
+                              : f
+                          )
+                        );
+                      }}
+                      onRemove={() => removeField(field.id)}
+                    />
+                  );
+                }
+              })}
             </ol>
           </SortableContext>
         </DndContext>
-        {/* <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
-          {fields.map((field) => (
-            <FieldItem
-              key={field.id}
-              field={field}
-              setLabel={(newLabel) =>
-                setFields((prev) =>
-                  prev.map((f) =>
-                    f.id === field.id ? { ...f, label: newLabel } : f
-                  )
-                )
-              }
-              setPlaceholder={(newPlaceholder) =>
-                setFields((prev) =>
-                  prev.map((f) =>
-                    f.id === field.id
-                      ? { ...f, placeholder: newPlaceholder }
-                      : f
-                  )
-                )
-              }
-              setRequired={(newRequired) =>
-                setFields((prev) =>
-                  prev.map((f) =>
-                    f.id === field.id ? { ...f, required: newRequired } : f
-                  )
-                )
-              }
-              onRemove={() => removeField(field.id)}
-            />
-          ))}
-        </ol> */}
         {fields.length !== 0 ? (
           <Button onClick={() => setAddFieldDialogOpen(true)}>Add field</Button>
         ) : (
