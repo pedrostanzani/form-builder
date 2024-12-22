@@ -10,7 +10,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -23,25 +22,31 @@ import { GripVertical, Settings, Square, Trash2 } from "lucide-react";
 import { type Field } from "@/types/fields";
 import { capitalize, cn } from "@/lib/utils";
 
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 const getUserFieldHTMLId = (fieldId: number, field: string) => {
   return `user-field-${fieldId}--${field}`;
 };
 
 export const FieldItem = React.memo(
   ({
+    id,
     field,
     setLabel,
     setPlaceholder,
     setRequired,
     onRemove,
   }: {
+    id: number;
     field: Field;
     setLabel: (label: string) => void;
     setPlaceholder: (placeholder: string) => void;
     setRequired: (required: boolean) => void;
     onRemove: (id: number) => void;
   }) => {
-    const [fieldSettingsDialogOpen, setFieldSettingsDialogOpen] = useState(false);
+    const [fieldSettingsDialogOpen, setFieldSettingsDialogOpen] =
+      useState(false);
 
     const fieldType = fieldTypes.find(
       (fieldType) => fieldType.type === field.type
@@ -49,9 +54,25 @@ export const FieldItem = React.memo(
 
     const fieldTypeName = fieldType?.name || capitalize(field.type);
 
+    const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+      useSortable({ id });
+
     return (
-      <li className="rounded-lg overflow-hidden border border-zinc-200 text-zinc-950 shadow-sm flex gap-3">
-        <div className="cursor-move flex justify-center items-center bg-gray-200 text-zinc-400 h-full w-4">
+      <li
+        ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          zIndex: isDragging ? 100 : "auto",
+          position: isDragging ? "relative" : "static",
+        }}
+        {...attributes}
+        className="rounded-lg bg-white overflow-hidden border border-zinc-200 text-zinc-950 shadow-sm flex gap-3"
+      >
+        <div
+          {...listeners}
+          className="cursor-move flex justify-center items-center bg-gray-200 text-zinc-400 h-full w-4"
+        >
           <GripVertical />
         </div>
         <div className="h-full w-full pr-3 py-3 space-y-3">
@@ -79,7 +100,10 @@ export const FieldItem = React.memo(
               />
             </div>
             <div className="self-end flex gap-1.5">
-              <Dialog open={fieldSettingsDialogOpen} onOpenChange={setFieldSettingsDialogOpen}>
+              <Dialog
+                open={fieldSettingsDialogOpen}
+                onOpenChange={setFieldSettingsDialogOpen}
+              >
                 <DialogTrigger asChild>
                   <Button variant="outline">
                     <Settings className="text-zinc-800" />
