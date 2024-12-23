@@ -8,7 +8,6 @@ import { Settings, Square, Trash2 } from "lucide-react";
 import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { FieldTypeIconWrapper } from "@/components/field-type-icon";
 import {
@@ -36,7 +35,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { StringField } from "@/types/fields";
+import { EnumField } from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
 import { cn, getUserFieldHTMLId } from "@/lib/utils";
 import { FieldItemWrapper } from "../field-item-wrapper";
@@ -46,7 +45,7 @@ const formSchema = z.object({
   format: z.enum(["input", "textarea", "email", "password"]),
 });
 
-const StringFieldSettings = ({
+const EnumFieldSettings = ({
   placeholder,
   format,
   onSave,
@@ -120,20 +119,16 @@ const StringFieldSettings = ({
   );
 };
 
-export const StringFieldItem = React.memo(
+export const EnumFieldItem = React.memo(
   ({
     id,
     field,
     setLabel,
-    setRequired,
-    onSaveSettings,
     onRemove,
   }: {
     id: number;
-    field: StringField;
+    field: EnumField;
     setLabel: (label: string) => void;
-    setRequired: (required: boolean) => void;
-    onSaveSettings: (values: z.infer<typeof formSchema>) => void;
     onRemove: (id: number) => void;
   }) => {
     const [fieldSettingsDialogOpen, setFieldSettingsDialogOpen] =
@@ -151,7 +146,7 @@ export const StringFieldItem = React.memo(
             size={18}
             className={cn(fieldType?.className || "bg-gray-500", "h-8 w-8")}
           />
-          <span className="font-medium">String field</span>
+          <span className="font-medium">Enum field</span>
         </div>
         <div className="flex justify-between gap-1.5">
           <div className="space-y-1 w-full">
@@ -180,20 +175,20 @@ export const StringFieldItem = React.memo(
               </DialogTrigger>
               <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                  <DialogTitle>String field</DialogTitle>
+                  <DialogTitle>Enum field</DialogTitle>
                   <DialogDescription>
                     Make changes to your form field here. Click save when you're
                     done.
                   </DialogDescription>
                 </DialogHeader>
-                <StringFieldSettings
-                  placeholder={field.placeholder}
-                  format={field.format}
-                  onSave={(values) => {
-                    onSaveSettings(values);
-                    setFieldSettingsDialogOpen(false);
-                  }}
-                />
+                {/* <EnumFieldSettings
+                    placeholder={field.placeholder}
+                    format={field.format}
+                    onSave={(values) => {
+                      onSaveSettings(values);
+                      setFieldSettingsDialogOpen(false);
+                    }}
+                  /> */}
               </DialogContent>
             </Dialog>
             <Button onClick={() => onRemove(field.id)} variant="outline">
@@ -201,16 +196,16 @@ export const StringFieldItem = React.memo(
             </Button>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Switch
-            checked={field.required}
-            onCheckedChange={(checked) => setRequired(checked)}
-            id={getUserFieldHTMLId(field.id, "required")}
-          />
-          <Label htmlFor={getUserFieldHTMLId(field.id, "required")}>
-            Required
-          </Label>
-        </div>
+        {/* <div className="flex items-center gap-2">
+            <Switch
+              checked={field.required}
+              onCheckedChange={(checked) => setRequired(checked)}
+              id={getUserFieldHTMLId(field.id, "required")}
+            />
+            <Label htmlFor={getUserFieldHTMLId(field.id, "required")}>
+              Required
+            </Label>
+          </div> */}
       </FieldItemWrapper>
     );
   }

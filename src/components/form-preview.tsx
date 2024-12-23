@@ -15,8 +15,15 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-import { Field, StringField } from "@/types/fields";
+import { EnumField, Field, StringField } from "@/types/fields";
 import { generateFieldKey } from "@/lib/utils";
 
 const generateSchema = (fields: Field[]) => {
@@ -27,7 +34,9 @@ const generateSchema = (fields: Field[]) => {
     if (field.type === "string") {
       const key = generateFieldKey(field.id);
       if (field.format === "email") {
-        schemaShape[key] = field.required ? z.string().email() : z.string().email().optional();
+        schemaShape[key] = field.required
+          ? z.string().email()
+          : z.string().email().optional();
       } else {
         schemaShape[key] = field.required ? z.string() : z.string().optional();
       }
@@ -56,7 +65,6 @@ const StringFormField = ({
         <FormItem>
           {userField.label && <FormLabel>{userField.label}</FormLabel>}
           <FormControl>
-            {/* <Textarea placeholder={userField.placeholder} {...field} /> */}
             {userField.format === "input" ? (
               <Input placeholder={userField.placeholder} {...field} />
             ) : userField.format === "textarea" ? (
@@ -75,6 +83,39 @@ const StringFormField = ({
               />
             )}
           </FormControl>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
+const EnumFormField = ({
+  field: userField,
+  formControl,
+}: {
+  formControl: Control<FieldValues> | undefined;
+  field: EnumField;
+}) => {
+  return (
+    <FormField
+      control={formControl}
+      name={generateFieldKey(userField.id)}
+      render={({ field }) => (
+        <FormItem>
+          {userField.label && <FormLabel>{userField.label}</FormLabel>}
+          <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a verified email to display" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <SelectItem value="m@example.com">m@example.com</SelectItem>
+              <SelectItem value="m@google.com">m@google.com</SelectItem>
+              <SelectItem value="m@support.com">m@support.com</SelectItem>
+            </SelectContent>
+          </Select>
           <FormMessage />
         </FormItem>
       )}
@@ -101,6 +142,16 @@ export function FormPreview({ fields }: { fields: Field[] }) {
           if (userField.type === "string") {
             return (
               <StringFormField
+                key={userField.id}
+                field={userField}
+                formControl={form.control}
+              />
+            );
+          }
+
+          if (userField.type === "enum") {
+            return (
+              <EnumFormField
                 key={userField.id}
                 field={userField}
                 formControl={form.control}

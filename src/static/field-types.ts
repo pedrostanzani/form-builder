@@ -43,11 +43,11 @@ export const fieldTypes: {
   //   className: "bg-amber-500",
   //   icon: CalendarCheck2,
   // },
-  // {
-  //   id: 5,
-  //   type: "enum",
-  //   name: "Enum",
-  //   className: "bg-purple-700",
-  //   icon: Braces,
-  // },
+  {
+    id: 5,
+    type: "enum",
+    name: "Enum",
+    className: "bg-purple-700",
+    icon: Braces,
+  },
 ];

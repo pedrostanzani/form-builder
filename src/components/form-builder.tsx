@@ -1,9 +1,10 @@
 "use client";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StringFieldItem } from "@/components/field-items/string";
+import { EnumFieldItem } from "@/components/field-items/enum";
 import { FormPreview } from "@/components/form-preview";
 import { FieldTypeIconWrapper } from "@/components/field-type-icon";
 import {
@@ -20,7 +21,6 @@ import {
   FieldType,
   Field,
   StringField,
-  NumberField,
   FieldWithoutId,
 } from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
@@ -38,6 +38,68 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+
+const GenericFieldItem = ({
+  field,
+  setFields,
+  removeField,
+}: {
+  field: Field;
+  setFields: (value: SetStateAction<Field[]>) => void;
+  removeField: (fieldId: number) => void;
+}) => {
+  if (field.type === "string") {
+    return (
+      <StringFieldItem
+        id={field.id}
+        field={field}
+        setLabel={(newLabel) =>
+          setFields((prev) =>
+            prev.map((f) => (f.id === field.id ? { ...f, label: newLabel } : f))
+          )
+        }
+        setRequired={(newRequired) =>
+          setFields((prev) =>
+            prev.map((f) =>
+              f.id === field.id ? { ...f, required: newRequired } : f
+            )
+          )
+        }
+        onSaveSettings={(values) => {
+          setFields((prev) =>
+            prev.map((f) =>
+              f.id === field.id
+                ? ({
+                    ...f,
+                    placeholder: values.placeholder,
+                    format: values.format,
+                  } as StringField)
+                : f
+            )
+          );
+        }}
+        onRemove={() => removeField(field.id)}
+      />
+    );
+  }
+
+  if (field.type === "enum") {
+    return (
+      <EnumFieldItem
+        id={field.id}
+        field={field}
+        setLabel={(newLabel) =>
+          setFields((prev) =>
+            prev.map((f) => (f.id === field.id ? { ...f, label: newLabel } : f))
+          )
+        }
+        onRemove={() => removeField(field.id)}
+      />
+    );
+  }
+
+  return null;
+};
 
 export function FormBuilder() {
   const [nextFieldId, setNextFieldId] = useState(1);
@@ -61,6 +123,15 @@ export function FormBuilder() {
         label: "My string field",
         placeholder: "Insert placeholder here...",
         required: false,
+      });
+    }
+
+    if (fieldType === "enum") {
+      appendField({
+        type: "enum",
+        format: "select",
+        label: "My enum field",
+        placeholder: "Insert placeholder here...",
       });
     }
 
@@ -89,7 +160,7 @@ export function FormBuilder() {
     <main className="flex flex-1 pt-4 px-4 gap-4">
       <div className="w-full">
         <h2 className="text-2xl font-bold tracking-tight mb-3">Form fields</h2>
-        <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre>
+        {/* <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre> */}
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -100,47 +171,14 @@ export function FormBuilder() {
             strategy={verticalListSortingStrategy}
           >
             <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
-              {fields.map((field) => {
-                if (field.type === "string") {
-                  return (
-                    <StringFieldItem
-                      key={field.id}
-                      id={field.id}
-                      field={field}
-                      setLabel={(newLabel) =>
-                        setFields((prev) =>
-                          prev.map((f) =>
-                            f.id === field.id ? { ...f, label: newLabel } : f
-                          )
-                        )
-                      }
-                      setRequired={(newRequired) =>
-                        setFields((prev) =>
-                          prev.map((f) =>
-                            f.id === field.id
-                              ? { ...f, required: newRequired }
-                              : f
-                          )
-                        )
-                      }
-                      onSaveSettings={(values) => {
-                        setFields((prev) =>
-                          prev.map((f) =>
-                            f.id === field.id
-                              ? {
-                                  ...f,
-                                  placeholder: values.placeholder,
-                                  format: values.format,
-                                }
-                              : f
-                          )
-                        );
-                      }}
-                      onRemove={() => removeField(field.id)}
-                    />
-                  );
-                }
-              })}
+              {fields.map((field) => (
+                <GenericFieldItem
+                  key={field.id}
+                  field={field}
+                  setFields={setFields}
+                  removeField={removeField}
+                />
+              ))}
             </ol>
           </SortableContext>
         </DndContext>

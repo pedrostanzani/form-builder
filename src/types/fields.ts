@@ -15,7 +15,15 @@ export type NumberField = {
   type: "number"
 }
 
-export type Field = StringField | NumberField
+export type EnumField = {
+  id: number;
+  type: "enum";
+  format: "select" | "combobox" | "radio";
+  label?: string;
+  placeholder?: string;
+}
 
-export type FieldWithoutId = Omit<StringField, "id"> | Omit<NumberField, "id">;
+export type Field = StringField | NumberField | EnumField
+
+export type FieldWithoutId = Omit<StringField, "id"> | Omit<NumberField, "id"> | Omit<EnumField, "id">;
 
