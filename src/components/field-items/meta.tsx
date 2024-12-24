@@ -28,7 +28,7 @@ export function MetaFieldItem({
 
   return (
     <div className="rounded-lg bg-white overflow-hidden border border-zinc-200 text-zinc-950 shadow-sm flex gap-3">
-      <div className="cursor-move flex justify-center items-center bg-gray-200 text-zinc-400 h-full w-4" />
+      <div className="flex justify-center items-center bg-gray-200 text-zinc-400 h-full w-4" />
       <div className="h-full flex flex-col w-full pr-3 py-3">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
