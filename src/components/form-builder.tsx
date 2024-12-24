@@ -118,20 +118,27 @@ const GenericFieldItem = ({
   return null;
 };
 
-export function FormBuilder() {
+export function FormBuilder({
+  initialData,
+}: {
+  initialData: {
+    metadata: {
+      title: string;
+      description: string;
+    };
+    fields: Field[];
+  };
+}) {
   const [nextFieldId, setNextFieldId] = useState(1);
   const [currentTab, setCurrentTab] = useState<"form" | "code">("form");
   const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
   const [anEnumHasBeenAdded, setAnEnumHasBeenAdded] = useState(false);
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
-  const [fields, setFields] = useState<Field[]>([]);
+  const [fields, setFields] = useState<Field[]>(initialData.fields);
   const [metadata, setMetadata] = useState<{
     title: string;
     description: string;
-  }>({
-    title: "My New Form",
-    description: "I built this form with shadcn/ui, React Hook Form and Zod...",
-  });
+  }>(initialData.metadata);
 
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 

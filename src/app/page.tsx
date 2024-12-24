@@ -1,4 +1,4 @@
-import { FormBuilder } from "@/components/form-builder"
+import { FormBuilderWrapper } from "@/components/form-builder-wrapper"
 import { Cable } from "lucide-react"
 import Link from "next/link"
 
@@ -12,7 +12,7 @@ export default function Home() {
           <span className="font-bold tracking-tight">Form Builder</span>
         </Link>
       </header>
-      <FormBuilder />
+      <FormBuilderWrapper />
     </div>
   )
 }
