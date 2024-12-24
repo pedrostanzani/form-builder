@@ -8,26 +8,15 @@ export const FormBuilderWrapper = () => {
   const [isClient, setIsClient] = useState(false);
 
   const parseParam = (form: string | null) => {
-    if (form === null) {
-      return null;
+    if (form === "shopping") {
+      return "shopping";
     }
-
-    try {
-      const decodedString = Buffer.from(form, "base64").toString("utf-8");
-      const parsedJSON = JSON.parse(decodedString);
-      const validatedData = initialFieldsSchema.parse(parsedJSON);
-      return {
-        ...validatedData,
-        fields: validatedData.fields.map((f, i) => ({ ...f, id: -i })),
-      };
-    } catch (error) {
-      return null;
-    }
+    return null;
   };
 
   const searchParams = useSearchParams();
   const form = searchParams.get("form");
-  const initialData = parseParam(form);
+  const param = parseParam(form);
 
   useEffect(() => {
     setIsClient(true);
@@ -37,7 +26,7 @@ export const FormBuilderWrapper = () => {
     return null;
   }
 
-  if (initialData === null) {
+  if (param === null) {
     return (
       <FormBuilder
         initialData={{
@@ -52,5 +41,46 @@ export const FormBuilderWrapper = () => {
     );
   }
 
-  return <FormBuilder initialData={initialData} />;
+  return (
+    <FormBuilder
+      initialData={{
+        metadata: {
+          title: "Criar nova lista de compras",
+          description:
+            "Use esse formulário para criar uma nova lista de compras.",
+        },
+        fields: [
+          {
+            type: "string",
+            format: "input",
+            label: "Nome da lista",
+            placeholder: "Minha nova lista de compras...",
+            required: false,
+            id: 0,
+          },
+          {
+            type: "enum",
+            format: "select",
+            label: "Frutas",
+            placeholder: "Selecionar fruta...",
+            options: [
+              { name: "Maçã", value: "apple" },
+              { name: "Banana", value: "banana" },
+              { name: "Laranja", value: "orange" },
+              { name: "Kiwi", value: "kiwi" },
+            ],
+            id: -1,
+          },
+          {
+            type: "string",
+            format: "textarea",
+            label: "Anotações",
+            placeholder: "Anotações...",
+            required: false,
+            id: -2,
+          },
+        ],
+      }}
+    />
+  );
 };
