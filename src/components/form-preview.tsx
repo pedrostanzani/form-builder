@@ -124,12 +124,20 @@ const EnumFormField = ({
   );
 };
 
-export function FormPreview({ fields, formValues, setFormValues }: { fields: Field[], 
-
-  formValues: Record<string, any>;         // The current typed values
+export function FormPreview({
+  fields,
+  metadata,
+  formValues,
+  setFormValues,
+}: {
+  fields: Field[];
+  metadata: {
+    title: string;
+    description: string;
+  };
+  formValues: Record<string, any>; // The current typed values
   setFormValues: (vals: Record<string, any>) => void; // Callback to update them
-
- }) {
+}) {
   const { formSchema, defaultValues } = generateSchema(fields);
   const mergedValues = { ...defaultValues, ...formValues };
 
@@ -152,6 +160,17 @@ export function FormPreview({ fields, formValues, setFormValues }: { fields: Fie
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div>
+          {metadata.title !== "" && (
+            <h1 className="text-3xl font-bold tracking-tight mb-1.5">
+              {metadata.title}
+            </h1>
+          )}
+          {metadata.description !== "" && (
+            <p className="text-base text-zinc-500">{metadata.description}</p>
+          )}
+        </div>
+
         {fields.map((userField) => {
           if (userField.type === "string") {
             return (

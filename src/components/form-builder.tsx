@@ -34,6 +34,7 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
+import { MetaFieldItem } from "./field-items/meta";
 
 const GenericFieldItem = ({
   field,
@@ -99,13 +100,24 @@ const GenericFieldItem = ({
 
 export function FormBuilder() {
   const [nextFieldId, setNextFieldId] = useState(1);
+  const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
+  const [metadata, setMetadata] = useState<{
+    title: string;
+    description: string;
+  }>({
+    title: "My New Form",
+    description: "I built this form with shadcn/ui, React Hook Form and Zod...",
+  });
 
   const [formValues, setFormValues] = useState<Record<string, any>>({});
 
   const appendField = (field: FieldWithoutId) => {
     setFields([...fields, { id: nextFieldId, ...field }]);
+    if (nextFieldId === 1) {
+      setMetadataIsCollapsed(false);
+    }
     setNextFieldId((prev) => prev + 1);
   };
 
@@ -161,27 +173,41 @@ export function FormBuilder() {
           <h2 className="text-2xl font-bold tracking-tight">Form fields</h2>
         </div>
         {/* <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre> */}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={fields.map((field) => field.id)}
-            strategy={verticalListSortingStrategy}
+        <div className="grid gap-3">
+          <MetaFieldItem
+            hideFields={metadataIsCollapsed}
+            setHideFields={setMetadataIsCollapsed}
+            title={metadata.title}
+            setTitle={(newTitle) =>
+              setMetadata((prev) => ({ ...prev, title: newTitle }))
+            }
+            description={metadata.description}
+            setDescription={(newDescription) =>
+              setMetadata((prev) => ({ ...prev, description: newDescription }))
+            }
+          />
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
-              {fields.map((field) => (
-                <GenericFieldItem
-                  key={field.id}
-                  field={field}
-                  setFields={setFields}
-                  removeField={removeField}
-                />
-              ))}
-            </ol>
-          </SortableContext>
-        </DndContext>
+            <SortableContext
+              items={fields.map((field) => field.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
+                {fields.map((field) => (
+                  <GenericFieldItem
+                    key={field.id}
+                    field={field}
+                    setFields={setFields}
+                    removeField={removeField}
+                  />
+                ))}
+              </ol>
+            </SortableContext>
+          </DndContext>
+        </div>
         {fields.length !== 0 ? (
           <Button onClick={() => setAddFieldDialogOpen(true)}>Add field</Button>
         ) : (
@@ -245,6 +271,7 @@ export function FormBuilder() {
             <FormPreview
               key={nextFieldId}
               fields={fields}
+              metadata={metadata}
               formValues={formValues}
               setFormValues={setFormValues}
             />
