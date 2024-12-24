@@ -1,6 +1,5 @@
 export type FieldType = "string" | "number" | "boolean" | "date" | "enum";
 
-
 export type StringField = {
   id: number;
   type: "string";
@@ -8,12 +7,12 @@ export type StringField = {
   label?: string;
   placeholder?: string;
   required: boolean;
-}
+};
 
 export type NumberField = {
   id: number;
-  type: "number"
-}
+  type: "number";
+};
 
 export type EnumField = {
   id: number;
@@ -21,9 +20,15 @@ export type EnumField = {
   format: "select" | "combobox" | "radio";
   label?: string;
   placeholder?: string;
-}
+  options: {
+    name: string;
+    value: string;
+  }[];
+};
 
-export type Field = StringField | NumberField | EnumField
+export type Field = StringField | NumberField | EnumField;
 
-export type FieldWithoutId = Omit<StringField, "id"> | Omit<NumberField, "id"> | Omit<EnumField, "id">;
-
+export type FieldWithoutId =
+  | Omit<StringField, "id">
+  | Omit<NumberField, "id">
+  | Omit<EnumField, "id">;

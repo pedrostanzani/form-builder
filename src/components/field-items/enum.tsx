@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Settings, Square, Trash2 } from "lucide-react";
+import { Plus, Settings, Square, Trash2 } from "lucide-react";
 
 import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -42,24 +42,35 @@ import { FieldItemWrapper } from "../field-item-wrapper";
 
 const formSchema = z.object({
   placeholder: z.string(),
-  format: z.enum(["input", "textarea", "email", "password"]),
+  options: z.array(
+    z.object({
+      name: z.string().min(1),
+      value: z.string().min(1),
+    })
+  ),
 });
 
 const EnumFieldSettings = ({
   placeholder,
-  format,
+  options,
   onSave,
 }: {
   placeholder?: string;
-  format: "input" | "textarea" | "email" | "password";
+  options?: { name: string; value: string }[];
   onSave: (values: z.infer<typeof formSchema>) => void;
 }) => {
   const form = useForm<z.infer<typeof formSchema>>({
+    mode: "onChange",
     resolver: zodResolver(formSchema),
     defaultValues: {
       placeholder: placeholder,
-      format: format,
+      options: options,
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "options", // Corresponds to the "options" field in the schema
   });
 
   return (
@@ -80,38 +91,46 @@ const EnumFieldSettings = ({
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="format"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Input format</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
+          <div className="flex flex-col gap-2">
+            <FormLabel className="pb-1">Options</FormLabel>
+            <ul className="space-y-2">
+              {fields.map((field, index) => (
+                <li key={field.id} className="flex items-center space-x-2">
                   <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a verified email to display" />
-                    </SelectTrigger>
+                    <Input
+                      placeholder="Name"
+                      {...form.register(`options.${index}.name`)}
+                    />
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="input">Input</SelectItem>
-                    <SelectItem value="textarea">Textarea</SelectItem>
-                    <SelectItem value="email">Email</SelectItem>
-                    <SelectItem value="password">Password</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormDescription>
-                  Choose the format of the field: standard input, textarea,
-                  email or password.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  <FormControl>
+                    <Input
+                      placeholder="Value"
+                      {...form.register(`options.${index}.value`)}
+                    />
+                  </FormControl>
+                  <Button
+                    type="button"
+                    onClick={() => remove(index)}
+                    variant="outline"
+                  >
+                    <Trash2 className="text-zinc-800" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+            <Button
+              type="button"
+              onClick={() => append({ name: "", value: "" })}
+              size="sm"
+              className="self-start"
+              variant="outline"
+            >
+              Add option
+            </Button>
+          </div>
+
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <Button disabled={!form.formState.isValid} type="submit">Save changes</Button>
           </DialogFooter>
         </form>
       </Form>
@@ -124,11 +143,13 @@ export const EnumFieldItem = React.memo(
     id,
     field,
     setLabel,
+    onSaveSettings,
     onRemove,
   }: {
     id: number;
     field: EnumField;
     setLabel: (label: string) => void;
+    onSaveSettings: (values: z.infer<typeof formSchema>) => void;
     onRemove: (id: number) => void;
   }) => {
     const [fieldSettingsDialogOpen, setFieldSettingsDialogOpen] =
@@ -173,7 +194,7 @@ export const EnumFieldItem = React.memo(
                   <Settings className="text-zinc-800" />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
+              <DialogContent className="max-h-[625px] overflow-y-scroll sm:max-w-[525px]">
                 <DialogHeader>
                   <DialogTitle>Enum field</DialogTitle>
                   <DialogDescription>
@@ -181,14 +202,14 @@ export const EnumFieldItem = React.memo(
                     done.
                   </DialogDescription>
                 </DialogHeader>
-                {/* <EnumFieldSettings
-                    placeholder={field.placeholder}
-                    format={field.format}
-                    onSave={(values) => {
-                      onSaveSettings(values);
-                      setFieldSettingsDialogOpen(false);
-                    }}
-                  /> */}
+                <EnumFieldSettings
+                  options={field.options}
+                  placeholder={field.placeholder}
+                  onSave={(values) => {
+                    onSaveSettings(values);
+                    setFieldSettingsDialogOpen(false);
+                  }}
+                />
               </DialogContent>
             </Dialog>
             <Button onClick={() => onRemove(field.id)} variant="outline">

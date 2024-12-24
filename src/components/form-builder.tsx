@@ -18,7 +18,13 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { cn } from "@/lib/utils";
 
-import { FieldType, Field, StringField, FieldWithoutId } from "@/types/fields";
+import {
+  FieldType,
+  Field,
+  StringField,
+  FieldWithoutId,
+  EnumField,
+} from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
 
 import {
@@ -90,6 +96,19 @@ const GenericFieldItem = ({
             prev.map((f) => (f.id === field.id ? { ...f, label: newLabel } : f))
           )
         }
+        onSaveSettings={(values) => {
+          setFields((prev) =>
+            prev.map((f) =>
+              f.id === field.id
+                ? ({
+                    ...f,
+                    placeholder: values.placeholder,
+                    options: values.options,
+                  } as EnumField)
+                : f
+            )
+          );
+        }}
         onRemove={() => removeField(field.id)}
       />
     );
@@ -100,7 +119,9 @@ const GenericFieldItem = ({
 
 export function FormBuilder() {
   const [nextFieldId, setNextFieldId] = useState(1);
+  const [currentTab, setCurrentTab] = useState<"form" | "code">("form");
   const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
+  const [anEnumHasBeenAdded, setAnEnumHasBeenAdded] = useState(false);
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
   const [metadata, setMetadata] = useState<{
@@ -141,8 +162,16 @@ export function FormBuilder() {
         type: "enum",
         format: "select",
         label: "My enum field",
-        placeholder: "Insert placeholder here...",
+        placeholder: "Select an option from the enum...",
+        options: anEnumHasBeenAdded
+          ? []
+          : [
+              { name: "Apple", value: "apple" },
+              { name: "Banana", value: "banana" },
+              { name: "Orange", value: "orange" },
+            ],
       });
+      setAnEnumHasBeenAdded(true);
     }
 
     setAddFieldDialogOpen(false);
@@ -252,7 +281,11 @@ export function FormBuilder() {
       <div className="w-full">
         <div className="flex justify-between mb-3 items-center">
           <h2 className="text-2xl font-bold tracking-tight">Preview</h2>
-          <Tabs defaultValue="account" className="">
+          <Tabs
+            defaultValue="form"
+            value={currentTab}
+            onValueChange={setCurrentTab as (value: string) => void}
+          >
             <TabsList>
               <TabsTrigger value="form">Form</TabsTrigger>
               <TabsTrigger value="code">Code</TabsTrigger>

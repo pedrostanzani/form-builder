@@ -43,6 +43,12 @@ const generateSchema = (fields: Field[]) => {
       }
       defaultValues[key] = "";
     }
+
+    if (field.type === "enum") {
+      const key = generateFieldKey(field.id);
+      schemaShape[key] = z.string();
+      defaultValues[key] = "";
+    }
   });
 
   return {
@@ -108,13 +114,15 @@ const EnumFormField = ({
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger>
-                <SelectValue placeholder="Select a verified email to display" />
+                <SelectValue placeholder={userField.placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>
-              <SelectItem value="m@example.com">m@example.com</SelectItem>
-              <SelectItem value="m@google.com">m@google.com</SelectItem>
-              <SelectItem value="m@support.com">m@support.com</SelectItem>
+              {userField.options.map(({ name, value }) => (
+                <SelectItem key={value} value={value}>
+                  {name}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
           <FormMessage />
