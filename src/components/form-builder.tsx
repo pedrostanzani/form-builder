@@ -106,6 +106,8 @@ export function FormBuilder() {
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
   const [fields, setFields] = useState<Field[]>([]);
 
+  const [formValues, setFormValues] = useState<Record<string, any>>({});
+
   const appendField = (field: FieldWithoutId) => {
     setFields([...fields, { id: nextFieldId, ...field }]);
     setNextFieldId((prev) => prev + 1);
@@ -157,7 +159,7 @@ export function FormBuilder() {
   };
 
   return (
-    <main className="flex flex-1 pt-4 px-4 gap-4">
+    <main className="flex flex-1 pt-4 px-4 gap-4 pb-4">
       <div className="w-full">
         <h2 className="text-2xl font-bold tracking-tight mb-3">Form fields</h2>
         {/* <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre> */}
@@ -234,7 +236,7 @@ export function FormBuilder() {
           )}
         >
           {fields.length !== 0 ? (
-            <FormPreview fields={fields} />
+            <FormPreview key={nextFieldId} fields={fields} formValues={formValues} setFormValues={setFormValues} />
           ) : (
             <p className="text-zinc-500 text-sm max-w-72">
               Add fields to the form to get started and then visualize the form

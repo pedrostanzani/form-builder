@@ -25,6 +25,7 @@ import {
 
 import { EnumField, Field, StringField } from "@/types/fields";
 import { generateFieldKey } from "@/lib/utils";
+import { useEffect } from "react";
 
 const generateSchema = (fields: Field[]) => {
   const schemaShape: Record<string, z.ZodTypeAny> = {};
@@ -123,17 +124,30 @@ const EnumFormField = ({
   );
 };
 
-export function FormPreview({ fields }: { fields: Field[] }) {
+export function FormPreview({ fields, formValues, setFormValues }: { fields: Field[], 
+
+  formValues: Record<string, any>;         // The current typed values
+  setFormValues: (vals: Record<string, any>) => void; // Callback to update them
+
+ }) {
   const { formSchema, defaultValues } = generateSchema(fields);
+  const mergedValues = { ...defaultValues, ...formValues };
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: defaultValues,
+    defaultValues: mergedValues,
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
+
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      setFormValues(values);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, setFormValues]);
 
   return (
     <Form {...form}>
