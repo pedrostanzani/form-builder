@@ -204,7 +204,7 @@ export function FormBuilder({
   };
 
   return (
-    <main className="flex flex-1 pt-4 px-4 gap-4 pb-4">
+    <main className="flex sm:flex-row flex-col flex-1 pt-4 px-4 gap-4 pb-4">
       <div className="w-full">
         <div className="mb-3 h-10 flex items-center">
           <h2 className="text-2xl font-bold tracking-tight">Form fields</h2>
