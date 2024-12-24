@@ -215,3 +215,5 @@ export const StringFieldItem = React.memo(
     );
   }
 );
+
+StringFieldItem.displayName = "StringFieldItem";

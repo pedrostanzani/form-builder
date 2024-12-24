@@ -1,10 +1,12 @@
 "use client";
-import { useEffect, useState } from "react";
 import { FormBuilder } from "./form-builder";
-import { Field, initialFieldsSchema } from "@/types/fields";
+import { initialFieldsSchema } from "@/types/fields";
 import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export const FormBuilderWrapper = () => {
+  const [isClient, setIsClient] = useState(false);
+
   const parseParam = (form: string | null) => {
     if (form === null) {
       return null;
@@ -26,6 +28,14 @@ export const FormBuilderWrapper = () => {
   const searchParams = useSearchParams();
   const form = searchParams.get("form");
   const initialData = parseParam(form);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null;
+  }
 
   if (initialData === null) {
     return (

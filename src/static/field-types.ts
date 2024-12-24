@@ -1,9 +1,6 @@
 import { FieldType } from "@/types/fields";
 import {
   LetterText,
-  Binary,
-  ToggleRight,
-  CalendarCheck2,
   Braces,
   type LucideIcon,
 } from "lucide-react";

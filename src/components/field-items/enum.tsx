@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { z } from "zod";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Settings, Square, Trash2 } from "lucide-react";
+import { Settings, Square, Trash2 } from "lucide-react";
 
 import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
@@ -271,3 +271,5 @@ export const EnumFieldItem = React.memo(
     );
   }
 );
+
+EnumFieldItem.displayName = "EnumFieldItem";
