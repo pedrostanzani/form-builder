@@ -93,7 +93,7 @@ const StringFieldSettings = ({
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a verified email to display" />
+                      <SelectValue placeholder="Select an input format" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>

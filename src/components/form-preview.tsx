@@ -2,8 +2,22 @@
 
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Control, FieldValues, useForm } from "react-hook-form";
+import { Control, FieldValues, useForm, UseFormReturn } from "react-hook-form";
 
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -24,8 +38,9 @@ import {
 } from "@/components/ui/select";
 
 import { EnumField, Field, StringField } from "@/types/fields";
-import { generateFieldKey } from "@/lib/utils";
+import { cn, generateFieldKey } from "@/lib/utils";
 import { useEffect } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
 
 const generateSchema = (fields: Field[]) => {
   const schemaShape: Record<string, z.ZodTypeAny> = {};
@@ -98,33 +113,138 @@ const StringFormField = ({
 };
 
 const EnumFormField = ({
+  form,
   field: userField,
   formControl,
 }: {
+  form: UseFormReturn<
+    {
+      [x: string]: any;
+    },
+    any,
+    undefined
+  >;
   formControl: Control<FieldValues> | undefined;
   field: EnumField;
 }) => {
+  if (userField.format === "select") {
+    return (
+      <FormField
+        control={formControl}
+        name={generateFieldKey(userField.id)}
+        render={({ field }) => (
+          <FormItem>
+            {userField.label && <FormLabel>{userField.label}</FormLabel>}
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder={userField.placeholder} />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                {userField.options.map(({ name, value }) => (
+                  <SelectItem key={value} value={value}>
+                    {name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  }
+
+  if (userField.format === "radio") {
+    return (
+      <FormField
+        control={formControl}
+        name={generateFieldKey(userField.id)}
+        render={({ field }) => (
+          <FormItem className="space-y-3">
+            {userField.label && <FormLabel>{userField.label}</FormLabel>}
+            <FormControl>
+              <RadioGroup
+                onValueChange={field.onChange}
+                defaultValue={field.value}
+                className="flex flex-col space-y-1"
+              >
+                {userField.options.map(({ name, value }) => (
+                  <FormItem
+                    key={value}
+                    className="flex items-center space-x-3 space-y-0"
+                  >
+                    <FormControl>
+                      <RadioGroupItem value={value} />
+                    </FormControl>
+                    <FormLabel className="font-normal">{name}</FormLabel>
+                  </FormItem>
+                ))}
+              </RadioGroup>
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    );
+  }
+
   return (
     <FormField
       control={formControl}
       name={generateFieldKey(userField.id)}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className="flex flex-col">
           {userField.label && <FormLabel>{userField.label}</FormLabel>}
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
-            <FormControl>
-              <SelectTrigger>
-                <SelectValue placeholder={userField.placeholder} />
-              </SelectTrigger>
-            </FormControl>
-            <SelectContent>
-              {userField.options.map(({ name, value }) => (
-                <SelectItem key={value} value={value}>
-                  {name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <Popover>
+            <PopoverTrigger asChild>
+              <FormControl>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  className={cn(
+                    "w-[200px] justify-between",
+                    !field.value && "text-muted-foreground"
+                  )}
+                >
+                  {field.value
+                    ? userField.options.find(
+                        ({ value }) => value === field.value
+                      )?.name
+                    : userField.placeholder}
+                  <ChevronsUpDown className="opacity-50" />
+                </Button>
+              </FormControl>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search..." className="h-9" />
+                <CommandList>
+                  <CommandEmpty>No matches found.</CommandEmpty>
+                  <CommandGroup>
+                    {userField.options.map(({ name, value }) => (
+                      <CommandItem
+                        value={value}
+                        key={value}
+                        onSelect={() => {
+                          form.setValue(generateFieldKey(userField.id), value);
+                        }}
+                      >
+                        {name}
+                        <Check
+                          className={cn(
+                            "ml-auto",
+                            value === field.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
           <FormMessage />
         </FormItem>
       )}
@@ -194,6 +314,7 @@ export function FormPreview({
             return (
               <EnumFormField
                 key={userField.id}
+                form={form}
                 field={userField}
                 formControl={form.control}
               />

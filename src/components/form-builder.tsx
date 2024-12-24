@@ -104,6 +104,7 @@ const GenericFieldItem = ({
                     ...f,
                     placeholder: values.placeholder,
                     options: values.options,
+                    format: values.format,
                   } as EnumField)
                 : f
             )

@@ -39,6 +39,7 @@ import { EnumField } from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
 import { cn, getUserFieldHTMLId } from "@/lib/utils";
 import { FieldItemWrapper } from "../field-item-wrapper";
+import { Separator } from "../ui/separator";
 
 const formSchema = z.object({
   placeholder: z.string(),
@@ -48,14 +49,17 @@ const formSchema = z.object({
       value: z.string().min(1),
     })
   ),
+  format: z.enum(["select", "combobox", "radio"]),
 });
 
 const EnumFieldSettings = ({
   placeholder,
+  format,
   options,
   onSave,
 }: {
   placeholder?: string;
+  format: "select" | "combobox" | "radio";
   options?: { name: string; value: string }[];
   onSave: (values: z.infer<typeof formSchema>) => void;
 }) => {
@@ -65,6 +69,7 @@ const EnumFieldSettings = ({
     defaultValues: {
       placeholder: placeholder,
       options: options,
+      format: format,
     },
   });
 
@@ -90,6 +95,38 @@ const EnumFieldSettings = ({
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="format"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Input format</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select an input format" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="select">Select</SelectItem>
+                    <SelectItem value="combobox">Combobox</SelectItem>
+                    <SelectItem value="radio">Radio Group</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>
+                  Choose the format of the field: select, combobox or radio
+                  group.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Separator className="my-4" />
 
           <div className="flex flex-col gap-2">
             <FormLabel className="pb-1">Options</FormLabel>
@@ -130,7 +167,9 @@ const EnumFieldSettings = ({
           </div>
 
           <DialogFooter>
-            <Button disabled={!form.formState.isValid} type="submit">Save changes</Button>
+            <Button disabled={!form.formState.isValid} type="submit">
+              Save changes
+            </Button>
           </DialogFooter>
         </form>
       </Form>
@@ -205,6 +244,7 @@ export const EnumFieldItem = React.memo(
                 <EnumFieldSettings
                   options={field.options}
                   placeholder={field.placeholder}
+                  format={field.format}
                   onSave={(values) => {
                     onSaveSettings(values);
                     setFieldSettingsDialogOpen(false);
