@@ -14,15 +14,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { cn } from "@/lib/utils";
 
-import {
-  FieldType,
-  Field,
-  StringField,
-  FieldWithoutId,
-} from "@/types/fields";
+import { FieldType, Field, StringField, FieldWithoutId } from "@/types/fields";
 import { fieldTypes } from "@/static/field-types";
 
 import {
@@ -161,7 +157,9 @@ export function FormBuilder() {
   return (
     <main className="flex flex-1 pt-4 px-4 gap-4 pb-4">
       <div className="w-full">
-        <h2 className="text-2xl font-bold tracking-tight mb-3">Form fields</h2>
+        <div className="mb-3 h-10 flex items-center">
+          <h2 className="text-2xl font-bold tracking-tight">Form fields</h2>
+        </div>
         {/* <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre> */}
         <DndContext
           sensors={sensors}
@@ -226,7 +224,15 @@ export function FormBuilder() {
         </Dialog>
       </div>
       <div className="w-full">
-        <h2 className="text-2xl font-bold tracking-tight mb-3">Preview</h2>
+        <div className="flex justify-between mb-3 items-center">
+          <h2 className="text-2xl font-bold tracking-tight">Preview</h2>
+          <Tabs defaultValue="account" className="">
+            <TabsList>
+              <TabsTrigger value="form">Form</TabsTrigger>
+              <TabsTrigger value="code">Code</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         <Card
           className={cn(
             "px-4 min-h-96 flex-1",
@@ -236,7 +242,12 @@ export function FormBuilder() {
           )}
         >
           {fields.length !== 0 ? (
-            <FormPreview key={nextFieldId} fields={fields} formValues={formValues} setFormValues={setFormValues} />
+            <FormPreview
+              key={nextFieldId}
+              fields={fields}
+              formValues={formValues}
+              setFormValues={setFormValues}
+            />
           ) : (
             <p className="text-zinc-500 text-sm max-w-72">
               Add fields to the form to get started and then visualize the form
