@@ -303,6 +303,7 @@ export function FormBuilder({
         <FormPreview
           key={nextFieldId}
           fields={fields}
+          currentTab={currentTab}
           metadata={metadata}
           formValues={formValues}
           setFormValues={setFormValues}

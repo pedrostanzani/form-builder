@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { EnumField, Field, StringField } from "@/types/fields";
 import { generateFieldKey } from "@/lib/utils";
 
+import { codeToHtml } from "shiki";
 import prettier, { Plugin } from "prettier";
 import parserTypeScript from "prettier/parser-typescript";
 import * as prettierPluginEstree from "prettier/plugins/estree";
+import { Button } from "../ui/button";
+import { Check, Copy } from "lucide-react";
 
 const formatTypeScriptCode = async (code: string) => {
   return await prettier.format(code, {
@@ -320,17 +323,53 @@ ${fields.map((field) => generateFieldSourceCode(field)).join("\n")}
   )
 }`;
 
-  const [formattedCode, setFormattedCode] = useState<string>("");
+  const getHTMLFromSourceCode = async (sourceCode: string) => {
+    const formattedCode = await formatTypeScriptCode(sourceCode);
+    return await codeToHtml(formattedCode, {
+      lang: "tsx",
+      theme: "github-dark-high-contrast",
+    });
+  };
+
+  const [html, setHTML] = useState<string>("");
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(html);
+      setIsCopied(true);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy text:", error);
+    }
+  };
 
   useEffect(() => {
-    formatTypeScriptCode(sourceCode).then((s) => setFormattedCode(s));
+    getHTMLFromSourceCode(sourceCode).then((html) => {
+      setHTML(html);
+    });
   });
 
   return (
-    <div>
-      <pre className="text-xs">
-        <code>{formattedCode}</code>
-      </pre>
+    <div className="relative bg-[#090b0e] rounded-xl overflow-hidden">
+      <div
+        className="text-xs overflow-y-scroll p-4 max-h-96"
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
+      <div className="pt-4 pr-3.5 absolute top-0 right-0">
+        <button
+          onClick={handleCopy}
+          className="bg-transparent h-[22px] w-[22px] rounded-md flex justify-center items-center transition-colors hover:bg-zinc-700"
+        >
+          {isCopied ? (
+            <Check size={14} className="text-zinc-100" />
+          ) : (
+            <Copy size={14} className="text-zinc-100" />
+          )}
+        </button>
+      </div>
     </div>
   );
 }

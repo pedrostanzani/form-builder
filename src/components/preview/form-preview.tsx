@@ -72,12 +72,14 @@ const parseFields = (fields: Field[]) => {
 
 export function FormPreview({
   fields,
+  currentTab,
   metadata,
   formValues,
   setFormValues,
   nextFieldId,
 }: {
   fields: Field[];
+  currentTab: "form" | "code";
   metadata: {
     title: string;
     description: string;
@@ -95,7 +97,8 @@ export function FormPreview({
           "px-4 min-h-96 flex-1",
           fields.length !== 0
             ? "px-5 py-4"
-            : "flex justify-center items-center text-center"
+            : "flex justify-center items-center text-center",
+          currentTab !== "form" && "hidden"
         )}
       >
         {fields.length !== 0 ? (
@@ -115,11 +118,13 @@ export function FormPreview({
           </p>
         )}
       </Card>
-      <SourceCodePreview
-        metadata={metadata}
-        fields={fields}
-        schemaCode={schemaSource}
-      />
+      {currentTab === "code" && (
+        <SourceCodePreview
+          metadata={metadata}
+          fields={fields}
+          schemaCode={schemaSource}
+        />
+      )}
     </>
   );
 }
