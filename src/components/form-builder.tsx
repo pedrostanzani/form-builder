@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { StringFieldItem } from "@/components/field-items/string";
 import { EnumFieldItem } from "@/components/field-items/enum";
-import { FormPreview } from "@/components/form-preview";
 import { FieldTypeIconWrapper } from "@/components/field-type-icon";
 import {
   Dialog,
@@ -41,6 +40,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { MetaFieldItem } from "./field-items/meta";
+import { FormPreview } from "./preview/form-preview";
 
 const GenericFieldItem = ({
   field,
@@ -300,29 +300,14 @@ export function FormBuilder({
             </TabsList>
           </Tabs>
         </div>
-        <Card
-          className={cn(
-            "px-4 min-h-96 flex-1",
-            fields.length !== 0
-              ? "px-5 py-4"
-              : "flex justify-center items-center text-center"
-          )}
-        >
-          {fields.length !== 0 ? (
-            <FormPreview
-              key={nextFieldId}
-              fields={fields}
-              metadata={metadata}
-              formValues={formValues}
-              setFormValues={setFormValues}
-            />
-          ) : (
-            <p className="text-zinc-500 text-sm max-w-72">
-              Add fields to the form to get started and then visualize the form
-              preview.
-            </p>
-          )}
-        </Card>
+        <FormPreview
+          key={nextFieldId}
+          fields={fields}
+          metadata={metadata}
+          formValues={formValues}
+          setFormValues={setFormValues}
+          nextFieldId={nextFieldId}
+        />
       </div>
     </main>
   );

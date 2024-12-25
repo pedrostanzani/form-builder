@@ -42,36 +42,6 @@ import { cn, generateFieldKey } from "@/lib/utils";
 import { useEffect } from "react";
 import { Check, ChevronsUpDown } from "lucide-react";
 
-const generateSchema = (fields: Field[]) => {
-  const schemaShape: Record<string, z.ZodTypeAny> = {};
-  const defaultValues: Record<string, any> = {};
-
-  fields.forEach((field) => {
-    if (field.type === "string") {
-      const key = generateFieldKey(field.id);
-      if (field.format === "email") {
-        schemaShape[key] = field.required
-          ? z.string().email()
-          : z.string().email().optional();
-      } else {
-        schemaShape[key] = field.required ? z.string() : z.string().optional();
-      }
-      defaultValues[key] = "";
-    }
-
-    if (field.type === "enum") {
-      const key = generateFieldKey(field.id);
-      schemaShape[key] = z.string();
-      defaultValues[key] = "";
-    }
-  });
-
-  return {
-    formSchema: z.object(schemaShape),
-    defaultValues,
-  };
-};
-
 const StringFormField = ({
   field: userField,
   formControl,
@@ -252,12 +222,26 @@ const EnumFormField = ({
   );
 };
 
-export function FormPreview({
+export function LivePreview({
+  formSchema,
+  defaultValues,
   fields,
   metadata,
   formValues,
   setFormValues,
 }: {
+  formSchema: z.ZodObject<
+    Record<string, z.ZodTypeAny>,
+    "strip",
+    z.ZodTypeAny,
+    {
+      [x: string]: any;
+    },
+    {
+      [x: string]: any;
+    }
+  >;
+  defaultValues: Record<string, any>;
   fields: Field[];
   metadata: {
     title: string;
@@ -266,7 +250,6 @@ export function FormPreview({
   formValues: Record<string, any>; // The current typed values
   setFormValues: (vals: Record<string, any>) => void; // Callback to update them
 }) {
-  const { formSchema, defaultValues } = generateSchema(fields);
   const mergedValues = { ...defaultValues, ...formValues };
 
   const form = useForm<z.infer<typeof formSchema>>({
