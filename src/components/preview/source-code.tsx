@@ -325,18 +325,20 @@ ${fields.map((field) => generateFieldSourceCode(field)).join("\n")}
 
   const getHTMLFromSourceCode = async (sourceCode: string) => {
     const formattedCode = await formatTypeScriptCode(sourceCode);
+    setFormattedCode(formattedCode);
     return await codeToHtml(formattedCode, {
       lang: "tsx",
       theme: "github-dark-high-contrast",
     });
   };
 
+  const [formattedCode, setFormattedCode] = useState<string>("");
   const [html, setHTML] = useState<string>("");
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(html);
+      await navigator.clipboard.writeText(formattedCode);
       setIsCopied(true);
       setTimeout(() => {
         setIsCopied(false);
