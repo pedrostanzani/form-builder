@@ -4,10 +4,10 @@ import { EnumField, Field, StringField } from "@/types/fields";
 import { generateFieldKey } from "@/lib/utils";
 
 import { codeToHtml } from "shiki";
-import prettier, { Plugin } from "prettier";
-import parserTypeScript from "prettier/parser-typescript";
+import type { Plugin } from "prettier"
+import * as prettier from "prettier/standalone";
+import * as parserTypeScript from "prettier/parser-typescript";
 import * as prettierPluginEstree from "prettier/plugins/estree";
-import { Button } from "../ui/button";
 import { Check, Copy } from "lucide-react";
 
 const formatTypeScriptCode = async (code: string) => {
