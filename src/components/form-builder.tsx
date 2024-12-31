@@ -129,7 +129,11 @@ export function FormBuilder({
     fields: Field[];
   };
 }) {
-  const [nextFieldId, setNextFieldId] = useState(1);
+  const [nextFieldId, setNextFieldId] = useState(
+    initialData.fields.length === 0
+      ? 0
+      : Math.max(...initialData.fields.map((field) => field.id)) + 1
+  );
   const [currentTab, setCurrentTab] = useState<"form" | "code">("form");
   const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
   const [anEnumHasBeenAdded, setAnEnumHasBeenAdded] = useState(false);

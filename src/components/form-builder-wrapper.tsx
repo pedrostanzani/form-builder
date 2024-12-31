@@ -69,7 +69,7 @@ export const FormBuilderWrapper = () => {
               { name: "Laranja", value: "orange" },
               { name: "Kiwi", value: "kiwi" },
             ],
-            id: -1,
+            id: 1,
           },
           {
             type: "string",
@@ -77,7 +77,7 @@ export const FormBuilderWrapper = () => {
             label: "Anotações",
             placeholder: "Anotações...",
             required: false,
-            id: -2,
+            id: 2,
           },
         ],
       }}

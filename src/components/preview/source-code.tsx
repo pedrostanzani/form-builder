@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 import { EnumField, Field, StringField } from "@/types/fields";
-import { generateFieldKey } from "@/lib/utils";
+import { cn, generateFieldKey } from "@/lib/utils";
 
 import { codeToHtml } from "shiki";
-import type { Plugin } from "prettier"
+import type { Plugin } from "prettier";
 import * as prettier from "prettier/standalone";
 import * as parserTypeScript from "prettier/parser-typescript";
 import * as prettierPluginEstree from "prettier/plugins/estree";
@@ -250,10 +250,12 @@ const hasFieldWithFormat = (fields: Field[], format: string) => {
 };
 
 export function SourceCodePreview({
+  className,
   schemaCode,
   fields,
   metadata,
 }: {
+  className?: string;
   schemaCode: string;
   fields: Field[];
   metadata: {
@@ -278,6 +280,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 
+import { Button } from "@/components/ui/button";
 ${hasFieldWithFormat(fields, "radio") ? `import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";` : ``}
 ${hasFieldWithFormat(fields, "select") ? `import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";` : ``}
 ${
@@ -355,7 +358,12 @@ ${fields.map((field) => generateFieldSourceCode(field)).join("\n")}
   });
 
   return (
-    <div className="relative bg-[#090b0e] rounded-xl overflow-hidden">
+    <div
+      className={cn(
+        "relative bg-[#090b0e] rounded-xl overflow-hidden",
+        className
+      )}
+    >
       <div
         className="text-xs overflow-y-scroll p-4 max-h-96"
         dangerouslySetInnerHTML={{ __html: html }}

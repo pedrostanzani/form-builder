@@ -6,7 +6,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <div className="h-full flex flex-col">
-      <header className="text-zinc-950 shrink-0 sticky top-0 w-full z-50 h-14 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 flex items-center px-4 border-b border-neutral-100">
+      <header className="text-zinc-950 shrink-0 sticky top-0 w-full z-50 h-14 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60 flex justify-center sm:justify-start items-center px-4 border-b border-neutral-100">
         <Link className="flex items-center gap-2" href="/">
           <Cable size={20} />
           <span className="font-bold tracking-tight">Form Builder</span>

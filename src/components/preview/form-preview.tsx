@@ -118,13 +118,12 @@ export function FormPreview({
           </p>
         )}
       </Card>
-      {currentTab === "code" && (
-        <SourceCodePreview
-          metadata={metadata}
-          fields={fields}
-          schemaCode={schemaSource}
-        />
-      )}
+      <SourceCodePreview
+        className={cn(currentTab === "form" && "hidden")}
+        metadata={metadata}
+        fields={fields}
+        schemaCode={schemaSource}
+      />
     </>
   );
 }
