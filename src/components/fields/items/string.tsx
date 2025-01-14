@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { FieldTypeIconWrapper } from "@/components/field-type-icon";
+import { FieldTypeIconWrapper } from "@/components/fields/icon-wrapper";
 import {
   Form,
   FormControl,
@@ -37,9 +37,9 @@ import {
 } from "@/components/ui/dialog";
 
 import { StringField } from "@/types/fields";
-import { fieldTypes } from "@/static/field-types";
+import { fieldTypes } from "@/constants/field-types";
 import { cn, getUserFieldHTMLId } from "@/lib/utils";
-import { FieldItemWrapper } from "../field-item-wrapper";
+import { FieldItemWrapper } from "../item-wrapper";
 
 const formSchema = z.object({
   placeholder: z.string(),

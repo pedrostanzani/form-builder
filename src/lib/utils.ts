@@ -18,4 +18,8 @@ export function getUserFieldHTMLId(fieldId: number, field: string) {
 
 export function generateFieldKey(fieldId: number) {
   return `field_${fieldId}`;
-};
+}
+
+export function getMaxId(arr: { id: number }[]) {
+  return Math.max(...arr.map((item) => item.id));
+}

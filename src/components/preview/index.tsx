@@ -1,6 +1,6 @@
 "use client";
 import { Card } from "@/components/ui/card";
-import { LivePreview } from "./live-preview";
+import { LivePreview } from "./live";
 
 import { cn } from "@/lib/utils";
 import { SourceCodePreview } from "./source-code";

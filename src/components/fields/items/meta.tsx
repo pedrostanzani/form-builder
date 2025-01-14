@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
 import { Eye, EyeOff, Heading1 } from "lucide-react";
-import { FieldTypeIconWrapper } from "../field-type-icon";
+import { FieldTypeIconWrapper } from "../icon-wrapper";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "../ui/textarea";
-import { Button } from "../ui/button";
+import { Textarea } from "../../ui/textarea";
+import { Button } from "../../ui/button";
 import { Dispatch, SetStateAction } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useIsMounted } from "@/hooks/use-is-mounted";

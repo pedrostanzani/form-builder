@@ -9,7 +9,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { FieldTypeIconWrapper } from "@/components/field-type-icon";
+import { FieldTypeIconWrapper } from "@/components/fields/icon-wrapper";
 import {
   Form,
   FormControl,
@@ -36,10 +36,10 @@ import {
 } from "@/components/ui/dialog";
 
 import { EnumField } from "@/types/fields";
-import { fieldTypes } from "@/static/field-types";
+import { fieldTypes } from "@/constants/field-types";
 import { cn, getUserFieldHTMLId } from "@/lib/utils";
-import { FieldItemWrapper } from "../field-item-wrapper";
-import { Separator } from "../ui/separator";
+import { FieldItemWrapper } from "../item-wrapper";
+import { Separator } from "../../ui/separator";
 
 const formSchema = z.object({
   placeholder: z.string(),

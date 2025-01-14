@@ -3,9 +3,9 @@ import { SetStateAction, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { StringFieldItem } from "@/components/field-items/string";
-import { EnumFieldItem } from "@/components/field-items/enum";
-import { FieldTypeIconWrapper } from "@/components/field-type-icon";
+import { StringFieldItem } from "@/components/fields/items/string";
+import { EnumFieldItem } from "@/components/fields/items/enum";
+import { FieldTypeIconWrapper } from "@/components/fields/icon-wrapper";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-import { cn } from "@/lib/utils";
+import { cn, getMaxId } from "@/lib/utils";
 
 import {
   FieldType,
@@ -24,7 +24,7 @@ import {
   FieldWithoutId,
   EnumField,
 } from "@/types/fields";
-import { fieldTypes } from "@/static/field-types";
+import { fieldTypes } from "@/constants/field-types";
 
 import {
   DndContext,
@@ -39,8 +39,8 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-import { MetaFieldItem } from "./field-items/meta";
-import { FormPreview } from "./preview/form-preview";
+import { MetaFieldItem } from "./fields/items/meta";
+import { FormPreview } from "./preview";
 
 const GenericFieldItem = ({
   field,
@@ -130,9 +130,7 @@ export function FormBuilder({
   };
 }) {
   const [nextFieldId, setNextFieldId] = useState(
-    initialData.fields.length === 0
-      ? 0
-      : Math.max(...initialData.fields.map((field) => field.id)) + 1
+    initialData.fields.length === 0 ? 0 : getMaxId(initialData.fields) + 1
   );
   const [currentTab, setCurrentTab] = useState<"form" | "code">("form");
   const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
