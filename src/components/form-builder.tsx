@@ -1,10 +1,8 @@
 "use client";
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { StringFieldItem } from "@/components/fields/items/string";
-import { EnumFieldItem } from "@/components/fields/items/enum";
 import { FieldTypeIconWrapper } from "@/components/fields/icon-wrapper";
 import {
   Dialog,
@@ -20,9 +18,7 @@ import { cn, getMaxId } from "@/lib/utils";
 import {
   FieldType,
   Field,
-  StringField,
   FieldWithoutId,
-  EnumField,
 } from "@/types/fields";
 import { fieldTypes } from "@/constants/field-types";
 
@@ -41,105 +37,25 @@ import {
 } from "@dnd-kit/sortable";
 import { MetaFieldItem } from "./fields/items/meta";
 import { FormPreview } from "./preview";
+import { InitialData } from "@/types/initial-data";
+import { SubmitButtonFieldItem } from "./fields/items/submit";
+import { GenericFieldItem } from "./fields/items/generic";
 
-const GenericFieldItem = ({
-  field,
-  setFields,
-  removeField,
-}: {
-  field: Field;
-  setFields: (value: SetStateAction<Field[]>) => void;
-  removeField: (fieldId: number) => void;
-}) => {
-  if (field.type === "string") {
-    return (
-      <StringFieldItem
-        id={field.id}
-        field={field}
-        setLabel={(newLabel) =>
-          setFields((prev) =>
-            prev.map((f) => (f.id === field.id ? { ...f, label: newLabel } : f))
-          )
-        }
-        setRequired={(newRequired) =>
-          setFields((prev) =>
-            prev.map((f) =>
-              f.id === field.id ? { ...f, required: newRequired } : f
-            )
-          )
-        }
-        onSaveSettings={(values) => {
-          setFields((prev) =>
-            prev.map((f) =>
-              f.id === field.id
-                ? ({
-                    ...f,
-                    placeholder: values.placeholder,
-                    format: values.format,
-                  } as StringField)
-                : f
-            )
-          );
-        }}
-        onRemove={() => removeField(field.id)}
-      />
-    );
-  }
-
-  if (field.type === "enum") {
-    return (
-      <EnumFieldItem
-        id={field.id}
-        field={field}
-        setLabel={(newLabel) =>
-          setFields((prev) =>
-            prev.map((f) => (f.id === field.id ? { ...f, label: newLabel } : f))
-          )
-        }
-        onSaveSettings={(values) => {
-          setFields((prev) =>
-            prev.map((f) =>
-              f.id === field.id
-                ? ({
-                    ...f,
-                    placeholder: values.placeholder,
-                    options: values.options,
-                    format: values.format,
-                  } as EnumField)
-                : f
-            )
-          );
-        }}
-        onRemove={() => removeField(field.id)}
-      />
-    );
-  }
-
-  return null;
-};
-
-export function FormBuilder({
-  initialData,
-}: {
-  initialData: {
-    metadata: {
-      title: string;
-      description: string;
-    };
-    fields: Field[];
-  };
-}) {
+export function FormBuilder({ initialData }: { initialData: InitialData }) {
   const [nextFieldId, setNextFieldId] = useState(
     initialData.fields.length === 0 ? 0 : getMaxId(initialData.fields) + 1
   );
   const [currentTab, setCurrentTab] = useState<"form" | "code">("form");
   const [metadataIsCollapsed, setMetadataIsCollapsed] = useState(true);
+  const [submitButtonCardIsCollapsed, setSubmitButtonCardIsCollapsed] =
+    useState(true);
   const [anEnumHasBeenAdded, setAnEnumHasBeenAdded] = useState(false);
   const [addFieldDialogOpen, setAddFieldDialogOpen] = useState(false);
   const [fields, setFields] = useState<Field[]>(initialData.fields);
   const [metadata, setMetadata] = useState<{
     title: string;
     description: string;
+    submitText: string;
   }>(initialData.metadata);
 
   const [formValues, setFormValues] = useState<Record<string, any>>({});
@@ -207,12 +123,12 @@ export function FormBuilder({
 
   return (
     <main className="flex sm:flex-row flex-col flex-1 pt-4 px-4 gap-4 pb-4">
-      <div className="w-full">
+      <div className="w-full sm:w-1/2">
         <div className="mb-3 h-10 flex items-center">
           <h2 className="text-2xl font-bold tracking-tight">Form fields</h2>
         </div>
         {/* <pre className="text-xs mb-3">{JSON.stringify(fields, null, 2)}</pre> */}
-        <div className="grid gap-3">
+        <div className={cn("grid", fields.length === 0 ? "gap-2" : "gap-3")}>
           <MetaFieldItem
             hideFields={metadataIsCollapsed}
             setHideFields={setMetadataIsCollapsed}
@@ -234,7 +150,7 @@ export function FormBuilder({
               items={fields.map((field) => field.id)}
               strategy={verticalListSortingStrategy}
             >
-              <ol className={cn("grid gap-3", fields.length > 0 && "mb-4")}>
+              <ol className={cn("grid gap-3")}>
                 {fields.map((field) => (
                   <GenericFieldItem
                     key={field.id}
@@ -246,6 +162,14 @@ export function FormBuilder({
               </ol>
             </SortableContext>
           </DndContext>
+          <SubmitButtonFieldItem
+            hideFields={submitButtonCardIsCollapsed}
+            setHideFields={setSubmitButtonCardIsCollapsed}
+            submitText={metadata.submitText}
+            setSubmitText={(newSubmitText) =>
+              setMetadata((prev) => ({ ...prev, submitText: newSubmitText }))
+            }
+          />
         </div>
         {fields.length !== 0 ? (
           <Button onClick={() => setAddFieldDialogOpen(true)}>Add field</Button>
@@ -288,7 +212,7 @@ export function FormBuilder({
           </DialogContent>
         </Dialog>
       </div>
-      <div className="w-full">
+      <div className="w-full sm:w-1/2">
         <div className="flex justify-between mb-3 items-center">
           <h2 className="text-2xl font-bold tracking-tight">Preview</h2>
           <Tabs

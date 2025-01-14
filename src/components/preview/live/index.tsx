@@ -246,6 +246,7 @@ export function LivePreview({
   metadata: {
     title: string;
     description: string;
+    submitText: string;
   };
   formValues: Record<string, any>; // The current typed values
   setFormValues: (vals: Record<string, any>) => void; // Callback to update them
@@ -305,7 +306,9 @@ export function LivePreview({
           }
         })}
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {metadata.submitText === "" ? "Submit" : metadata.submitText}
+        </Button>
       </form>
     </Form>
   );

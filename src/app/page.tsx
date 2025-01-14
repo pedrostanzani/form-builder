@@ -4,6 +4,7 @@ import { Cable } from "lucide-react";
 
 import { templates } from "@/constants/templates";
 import { FormBuilder } from "@/components/form-builder";
+import { FormBuilderWrapper } from "@/components/form-builder-wrapper";
 
 export default async function Home({
   searchParams,
@@ -24,13 +25,14 @@ export default async function Home({
         </Link>
       </header>
       <Suspense>
-        <FormBuilder
+        <FormBuilderWrapper
           initialData={
             formTemplate?.data ?? {
               metadata: {
                 title: "My New Form",
                 description:
                   "I built this form with shadcn/ui, React Hook Form and Zod...",
+                submitText: "Submit",
               },
               fields: [],
             }

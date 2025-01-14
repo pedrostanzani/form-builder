@@ -11,6 +11,7 @@ export const templates: {
         title: "Criar nova lista de compras",
         description:
           "Use esse formulário para criar uma nova lista de compras.",
+        submitText: "Enviar",
       },
       fields: [
         {
