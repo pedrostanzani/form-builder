@@ -83,6 +83,7 @@ export function FormPreview({
   metadata: {
     title: string;
     description: string;
+    submitText: string;
   };
   formValues: Record<string, any>;
   setFormValues: (vals: Record<string, any>) => void;
